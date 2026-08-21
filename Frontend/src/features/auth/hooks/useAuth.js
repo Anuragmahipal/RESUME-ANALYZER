@@ -13,7 +13,6 @@ export const useAuth = () => {
         setUser(data.user)
         return { success: true }
     } catch (err) {
-        console.log(err)
         return {
             success: false,
             message: err?.response?.data?.message || "Login failed"
@@ -30,7 +29,6 @@ export const useAuth = () => {
         setUser(data.user)
         return { success: true }
     } catch (err) {
-        console.log(err)
         return {
             success: false,
             message: err?.response?.data?.message || "Registration failed"
@@ -44,8 +42,8 @@ export const useAuth = () => {
         try {
             await logout()
             setUser(null)
-        } catch (err) {
-            console.log(err)
+        } catch {
+            // logout failing client-side is non-critical; ignore
         } finally {
             setLoading(false)
         }
@@ -56,8 +54,8 @@ export const useAuth = () => {
             try {
                 const data = await getMe()
                 setUser(data.user)
-            } catch (err) {
-                console.log(err)
+            } catch {
+                // no active session; user stays logged out
             } finally {
                 setLoading(false)
             }

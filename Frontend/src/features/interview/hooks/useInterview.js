@@ -40,8 +40,7 @@ export const useInterview = () => {
       setReport(response.interviewReport);
 
       return response.interviewReport;
-    } catch (error) {
-      console.log(error);
+    } catch {
       return null;
     } finally {
       setLoading(false);
@@ -58,8 +57,7 @@ export const useInterview = () => {
       const response = await getInterviewReportById(id);
       setReport(response.interviewReport);
       return response.interviewReport;
-    } catch (error) {
-      console.log(error);
+    } catch {
       return null;
     } finally {
       setLoading(false);
@@ -76,8 +74,7 @@ export const useInterview = () => {
       const response = await getAllInterviewReports();
       setReports(response.interviewReports);
       return response.interviewReports;
-    } catch (error) {
-      console.log(error);
+    } catch {
       return [];
     } finally {
       setLoading(false);
@@ -107,8 +104,8 @@ export const useInterview = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (error) {
-      console.log(error);
+    } catch {
+      // PDF generation/download failed silently; loading state still resets below
     } finally {
       setLoading(false);
     }

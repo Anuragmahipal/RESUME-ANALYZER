@@ -1,4 +1,5 @@
 const pdfParse = require("pdf-parse").default || require("pdf-parse");
+const mammoth = require("mammoth");
 const {
   generateInterviewReport,
   generateResumePdf,
@@ -6,21 +7,35 @@ const {
 
 const interviewReportModel = require("../models/interviewReport.model");
 
+const DOCX_MIME_TYPE =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+// =========================
+// EXTRACT TEXT FROM RESUME FILE
+// =========================
+async function extractResumeText(file) {
+  if (file.mimetype === DOCX_MIME_TYPE) {
+    const { value } = await mammoth.extractRawText({ buffer: file.buffer });
+    return value;
+  }
+
+  // default: PDF
+  const pdfData = await pdfParse(file.buffer);
+  return pdfData.text;
+}
 
 // =========================
 // CREATE INTERVIEW REPORT
 // =========================
 async function generateInterViewReportController(req, res) {
   try {
-    console.log("Interview API HIT");
-
     if (!req.file) {
       return res.status(400).json({
         message: "Resume file is required",
       });
     }
 
-    const pdfData = await pdfParse(req.file.buffer);
+    const resumeText = await extractResumeText(req.file);
 
     const { selfDescription, jobDescription } = req.body;
 
@@ -31,14 +46,14 @@ async function generateInterViewReportController(req, res) {
     }
 
     const aiResult = await generateInterviewReport({
-      resume: pdfData.text,
+      resume: resumeText,
       selfDescription,
       jobDescription,
     });
 
     const savedReport = await interviewReportModel.create({
       user: req.user.id,
-      resume: pdfData.text,
+      resume: resumeText,
       selfDescription,
       jobDescription,
       ...aiResult,

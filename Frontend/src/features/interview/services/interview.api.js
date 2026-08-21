@@ -37,8 +37,6 @@ export const generateInterviewReport = async ({
   return res.data;
 };
 export const generateResumePdf = async ({ interviewReportId }) => {
-  console.log("PDF URL:", `${BASE_URL}/resume/${interviewReportId}`)
-
   const res = await axios.get(
     `${BASE_URL}/resume/${interviewReportId}`,
     {
